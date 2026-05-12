@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Memory — Cách GDA Kit giữ context xuyên session</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+:root{
+  --bg:#0a0a0f;--bg2:#12121a;--bg3:#1a1a2e;
+  --card:#16162a;--text:#d4d4e8;--dim:#8888aa;--bright:#f0f0ff;--white:#fff;
+  --accent:#a78bfa;--accent2:#c4b5fd;--accent-dark:#7c3aed;
+  --glow:rgba(167,139,250,.12);
+  --border:#2a2a44;
+  --green:#4ade80;--red:#f87171;--yellow:#fbbf24;--blue:#60a5fa;--cyan:#22d3ee;--pink:#f472b6;
+  --radius:14px;--radius-sm:8px;--max-w:820px;
+  --font:'Inter',system-ui,-apple-system,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.8;font-size:16.5px;-webkit-font-smoothing:antialiased}
+::selection{background:var(--accent-dark);color:var(--white)}
+
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,10,15,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;height:52px;padding:0 20px;gap:12px}
+.nav-logo{font-weight:900;font-size:16px;color:var(--accent);text-decoration:none;letter-spacing:-.5px}
+.nav-logo span{color:var(--dim);font-weight:500;font-size:13px;margin-left:6px}
+.tab-bar{display:flex;gap:2px;margin-left:auto}
+.tab-btn{color:var(--dim);font-size:13px;font-weight:600;padding:6px 14px;border-radius:8px;border:none;background:0;cursor:pointer;white-space:nowrap;transition:all .2s;font-family:var(--font)}
+.tab-btn:hover{color:var(--accent2);background:var(--glow)}
+.tab-btn.active{color:var(--accent);background:var(--glow)}
+
+.page{display:none;max-width:var(--max-w);margin:0 auto;padding:76px 24px 60px;animation:fadeIn .3s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.hero{padding:80px 24px 40px;text-align:center}
+.hero h1{font-size:clamp(24px,4.5vw,38px);font-weight:900;color:var(--bright);line-height:1.2;max-width:650px;margin:0 auto 12px;letter-spacing:-1px}
+.hero h1 em{font-style:normal;background:linear-gradient(135deg,var(--accent),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-sub{color:var(--dim);font-size:15px;max-width:520px;margin:0 auto 20px;line-height:1.7}
+.hero-meta{font-size:13px;color:var(--dim)}.hero-meta strong{color:var(--accent)}
+
+.page h3{font-size:20px;font-weight:800;color:var(--bright);margin:32px 0 12px;position:relative;padding-left:14px}
+.page h3::before{content:'';position:absolute;left:0;top:4px;bottom:4px;width:3px;border-radius:2px;background:var(--accent)}
+.page h4{font-size:16px;font-weight:700;color:var(--accent2);margin:20px 0 8px}
+.page p{margin-bottom:12px}
+.page strong{color:var(--bright);font-weight:600}
+.page ul,.page ol{margin:0 0 12px 20px}.page li{margin-bottom:4px}
+
+code{font-family:var(--mono);font-size:13px;background:var(--bg3);border:1px solid var(--border);padding:2px 6px;border-radius:5px;color:var(--accent2)}
+pre{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;overflow-x:auto;margin:12px 0 18px;position:relative}
+pre::before{content:attr(data-label);position:absolute;top:6px;right:10px;font-size:10px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:1px;opacity:.5}
+pre code{background:0;border:0;padding:0;color:var(--text);font-size:12.5px;line-height:1.6}
+
+.tbl{overflow-x:auto;margin:12px 0 18px;border-radius:var(--radius);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{background:var(--bg3);color:var(--accent);font-weight:700;text-align:left;padding:8px 14px;font-size:12px;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--border)}
+td{padding:8px 14px;border-bottom:1px solid rgba(42,42,68,.5);vertical-align:top}
+tr:last-child td{border-bottom:0}
+
+.callout{border-radius:var(--radius);padding:16px 20px;margin:16px 0 18px;border:1px solid}
+.callout-title{font-weight:800;font-size:13px;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+.callout.tip{background:rgba(74,222,128,.06);border-color:rgba(74,222,128,.2)}.callout.tip .callout-title{color:var(--green)}
+.callout.info{background:rgba(96,165,250,.06);border-color:rgba(96,165,250,.2)}.callout.info .callout-title{color:var(--blue)}
+.callout.warn{background:rgba(251,191,36,.06);border-color:rgba(251,191,36,.2)}.callout.warn .callout-title{color:var(--yellow)}
+
+blockquote{border-left:3px solid var(--accent-dark);padding:10px 16px;margin:12px 0 18px;background:rgba(167,139,250,.04);border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-style:italic;color:var(--dim)}
+blockquote strong{color:var(--accent2)}
+
+.page-nav{display:flex;justify-content:space-between;align-items:center;margin-top:40px;padding-top:16px;border-top:1px solid var(--border)}
+.page-nav button{background:var(--card);border:1px solid var(--border);color:var(--accent);padding:7px 16px;border-radius:var(--radius-sm);cursor:pointer;font-family:var(--font);font-weight:600;font-size:13px;transition:all .2s}
+.page-nav button:hover:not(:disabled){background:var(--glow);border-color:var(--accent-dark)}
+.page-nav button:disabled{opacity:.3;cursor:default}
+.page-nav .current{color:var(--dim);font-size:13px}
+
+footer{text-align:center;padding:30px 20px;color:var(--dim);font-size:12px;border-top:1px solid var(--border)}
+@media(max-width:640px){.hero{padding:66px 16px 30px}.page{padding:66px 16px 50px}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo" onclick="showPage('home');return false">GDA Kit<span>Agent Memory</span></a>
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="showPage('home')">Intro</button>
+      <button class="tab-btn" onclick="showPage('p1')">Problem</button>
+      <button class="tab-btn" onclick="showPage('p2')">Solution</button>
+      <button class="tab-btn" onclick="showPage('p3')">Apply</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ==================== INTRO ==================== -->
+<div class="page active" id="page-home">
+<section class="hero">
+  <h1>Agent <em>kh&ocirc;ng nh&#7899;</em> &mdash; v&agrave; c&aacute;ch GDA Kit gi&#7843;i quy&#7871;t</h1>
+  <p class="hero-sub">AI coding agent r&#7845;t gi&#7887;i trong 1 session. Nh&#432;ng session m&#7899;i, n&oacute; qu&ecirc;n s&#7841;ch &mdash; l&#7863;p l&#7895;i c&#361;, vi ph&#7841;m rules, kh&ocirc;ng bi&#7871;t project &#273;ang &#7903; &#273;&acirc;u. B&agrave;i vi&#7871;t n&agrave;y chia s&#7867; c&aacute;ch GDA Kit x&#7917; l&yacute; v&#7845;n &#273;&#7873; n&agrave;y v&agrave; h&#432;&#7899;ng d&#7851;n team &aacute;p d&#7909;ng.</p>
+  <div class="hero-meta"><strong>DK @ Apero</strong> &mdash; Th&aacute;ng 5/2026</div>
+</section>
+
+<div style="max-width:var(--max-w);margin:0 auto;padding:0 20px 30px">
+<h3 style="color:var(--bright);font-size:17px;margin-bottom:10px;padding-left:0">3 ph&#7847;n, &#273;&#7885;c trong 10 ph&uacute;t</h3>
+<ul>
+<li><strong>Problem</strong> &mdash; T&#7841;i sao agent qu&ecirc;n, v&agrave; t&#7841;i sao "b&#7843;o n&oacute; nh&#7899;" kh&ocirc;ng hi&#7879;u qu&#7843;</li>
+<li><strong>Solution</strong> &mdash; 3 l&#7899;p b&#7841;n c&oacute; th&#7875; &aacute;p d&#7909;ng ngay v&#7899;i Claude Code (kh&ocirc;ng c&#7847;n GDA Kit)</li>
+<li><strong>Recap</strong> &mdash; T&oacute;m t&#7855;t v&agrave; GDA Kit l&agrave;m g&igrave; th&ecirc;m</li>
+</ul>
+</div>
+
+<div class="page-nav"><button disabled></button><span></span><button onclick="showPage('p1')">Problem &rarr;</button></div>
+</div>
+
+<!-- ==================== PROBLEM ==================== -->
+<div class="page" id="page-p1">
+<h3>V&#7845;n &#273;&#7873;: M&#7895;i session l&agrave; ng&#432;&#7901;i m&#7899;i</h3>
+<p>Context window c&#7911;a LLM gi&#7889;ng b&#7897; nh&#7899; RAM &mdash; t&#7855;t m&aacute;y l&agrave; m&#7845;t. M&#7895;i session m&#7899;i, agent kh&ocirc;ng nh&#7899;:</p>
+<ul>
+<li>L&#7895;i &#273;&atilde; fix h&ocirc;m qua (v&agrave; s&#7869; m&#7855;c l&#7841;i)</li>
+<li>Quy t&#7855;c coding c&#7911;a d&#7921; &aacute;n (v&agrave; s&#7869; vi ph&#7841;m)</li>
+<li>Project &#273;ang &#7903; phase n&agrave;o, d&ugrave;ng g&igrave;, c&#7845;m g&igrave;</li>
+</ul>
+
+<p>V&iacute; d&#7909; th&#7921;c t&#7871;: Session 1, agent fix bug <code>async UniTaskVoid Start()</code> kh&ocirc;ng ch&#7841;y khi load scene &mdash; m&#7845;t 30 ph&uacute;t. Session 3, g&#7863;p l&#7841;i ch&iacute;nh x&aacute;c l&#7895;i &#273;&oacute; &mdash; l&#7841;i m&#7845;t 30 ph&uacute;t.</p>
+
+<h3>T&#7841;i sao "b&#7843;o n&oacute; nh&#7899;" kh&ocirc;ng ho&#7841;t &#273;&#7897;ng</h3>
+<p>Ph&#7843;n &#7913;ng &#273;&#7847;u ti&ecirc;n: vi&#7871;t instructions "sau khi fix bug, ghi l&#7841;i v&agrave;o file log". Th&#7921;c t&#7871; sau 10 sessions:</p>
+<pre data-label="session-gotchas.log"><code># Session Gotcha Captures
+# Append-only
+
+(kh&ocirc;ng c&oacute; entry n&agrave;o)</code></pre>
+
+<p>Agent &#273;ang fix bug &mdash; context &#273;&#7847;y stack traces, nhi&#7873;u files &#273;ang edit &mdash; vi&#7879;c "nh&#7899; ghi log" c&oacute; &#273;&#7897; &#432;u ti&ecirc;n r&#7845;t th&#7845;p. Gi&#7889;ng developer qu&ecirc;n update Jira sau khi fix bug.</p>
+
+<div class="callout warn"><div class="callout-title">Nguy&ecirc;n t&#7855;c</div>Kh&ocirc;ng ph&#7909; thu&#7897;c v&agrave;o agent <strong>t&#7921; nh&#7899;</strong> l&agrave;m g&igrave;. N&#7871;u quan tr&#7885;ng &rarr; t&#7921; &#273;&#7897;ng h&oacute;a. N&#7871;u kh&ocirc;ng t&#7921; &#273;&#7897;ng h&oacute;a &#273;&#432;&#7907;c &rarr; ch&#7845;p nh&#7853;n m&#7845;t.</div>
+
+<h3>C&ograve;n Native Memory th&igrave; sao?</h3>
+<p>Claude Code c&oacute; <code>MEMORY.md</code> &mdash; native memory t&#7921; &#273;&#7897;ng load m&#7895;i session. N&oacute; ho&#7841;t &#273;&#7897;ng t&#7889;t cho <strong>user preferences</strong> ("respond ti&#7871;ng Vi&#7879;t", "kh&ocirc;ng t&#7921; commit"). Nh&#432;ng v&#7851;n ph&#7909; thu&#7897;c agent t&#7921; quy&#7871;t &#273;&#7883;nh ghi &mdash; c&ugrave;ng v&#7845;n &#273;&#7873; v&#7899;i gotcha log. Agent c&oacute; th&#7875; fix bug m&agrave; kh&ocirc;ng save v&agrave;o memory.</p>
+<p>Native memory l&agrave; <strong>b&#7893; sung t&#7889;t cho preferences</strong>, nh&#432;ng kh&ocirc;ng &#273;&#7911; cho rules enforcement hay bug prevention.</p>
+
+<div class="page-nav"><button onclick="showPage('home')">&larr; Intro</button><span class="current">1 / 3</span><button onclick="showPage('p2')">Solution &rarr;</button></div>
+</div>
+
+<!-- ==================== SOLUTION ==================== -->
+<div class="page" id="page-p2">
+<h3>Nguy&ecirc;n t&#7855;c: kh&ocirc;ng s&#7917;a agent, s&#7917;a m&ocirc;i tr&#432;&#7901;ng</h3>
+<p>Thay v&igrave; mong agent nh&#7899;, x&acirc;y h&#7879; th&#7889;ng &#273;&#7875; <strong>m&ocirc;i tr&#432;&#7901;ng nh&#7855;c</strong>. 3 l&#7899;p d&#432;&#7899;i &#273;&acirc;y &aacute;p d&#7909;ng &#273;&#432;&#7907;c cho b&#7845;t k&#7923; d&#7921; &aacute;n n&agrave;o d&ugrave;ng Claude Code, kh&ocirc;ng c&#7847;n GDA Kit.</p>
+
+<!-- LAYER 1 -->
+<h3>L&#7899;p 1: CLAUDE.md + Rules &mdash; agent bi&#7871;t quy t&#7855;c</h3>
+<p>T&#7841;o file <code>CLAUDE.md</code> &#7903; root d&#7921; &aacute;n. Claude Code t&#7921; &#273;&#7897;ng load file n&agrave;y m&#7895;i session. Vi&#7871;t g&igrave; v&agrave;o &#273;&acirc;y, agent s&#7869; tu&acirc;n th&#7911;.</p>
+
+<pre data-label="CLAUDE.md (m&#7851;u)"><code># Project: My App
+
+## Coding Rules
+- PascalCase classes, camelCase variables
+- Kh&ocirc;ng d&ugrave;ng any trong TypeScript
+- Repository pattern cho data access
+- M&#7895;i file &lt; 200 d&ograve;ng
+
+## Forbidden
+- Kh&ocirc;ng console.log trong production
+- Kh&ocirc;ng commit tr&#7921;c ti&#7871;p v&agrave;o main
+- Kh&ocirc;ng th&ecirc;m dependency m&agrave; ch&#432;a h&#7887;i
+
+## Working Style
+- Respond b&#7857;ng ti&#7871;ng Vi&#7879;t
+- Kh&ocirc;ng t&#7921; commit khi ch&#432;a &#273;&#432;&#7907;c y&ecirc;u c&#7847;u
+- H&#7887;i tr&#432;&#7899;c khi refactor &gt; 3 files</code></pre>
+
+<p>Khi file n&agrave;y v&#432;&#7907;t ~200 d&ograve;ng, chia nh&#7887; v&agrave;o <code>.claude/rules/</code>:</p>
+<pre><code>.claude/rules/
+&#9500;&#9472;&#9472; code-quality.md      # Coding standards
+&#9500;&#9472;&#9472; architecture.md      # Project structure, deps
+&#9500;&#9472;&#9472; testing.md           # Test conventions
+&#9492;&#9472;&#9472; working-style.md     # C&aacute;ch l&agrave;m vi&#7879;c</code></pre>
+<p>Claude Code <strong>t&#7921; &#273;&#7897;ng inject t&#7845;t c&#7843; files</strong> trong <code>.claude/rules/</code> v&agrave;o m&#7895;i turn. Kh&ocirc;ng c&#7847;n agent nh&#7899; &#273;&#7885;c.</p>
+
+<div class="callout tip"><div class="callout-title">T&#7841;i sao chia nh&#7887;?</div>1 file 2000 d&ograve;ng = agent d&#7877; b&#7887; qua. Nhi&#7873;u files ng&#7855;n, m&#7895;i file 1 ch&#7911; &#273;&#7873; = agent x&#7917; l&yacute; t&#7889;t h&#417;n. GDA Kit d&ugrave;ng 14 rule files, m&#7895;i file ~50 d&ograve;ng.</div>
+
+<div class="callout info"><div class="callout-title">Cursor / Copilot</div>T&#432;&#417;ng &#273;&#432;&#417;ng: <code>.cursorrules</code> (Cursor), <code>.github/copilot-instructions.md</code> (Copilot). C&ugrave;ng &yacute; t&#432;&#7903;ng, kh&aacute;c t&ecirc;n file.</div>
+
+<!-- LAYER 2 -->
+<h3>L&#7899;p 2: Hooks &mdash; agent bi&#7871;t project &#273;ang &#7903; &#273;&acirc;u</h3>
+<p>Hooks l&agrave; scripts ch&#7841;y t&#7921; &#273;&#7897;ng khi c&oacute; s&#7921; ki&#7879;n. Agent kh&ocirc;ng c&#7847;n l&agrave;m g&igrave;. Claude Code h&#7895; tr&#7907; c&aacute;c events: <code>SessionStart</code>, <code>PreToolUse</code>, <code>PostToolUse</code>, <code>Stop</code>.</p>
+
+<p><strong>V&iacute; d&#7909; 1: Inject project context m&#7895;i session</strong></p>
+<pre data-label=".claude/hooks/session-init.cjs"><code>#!/usr/bin/env node
+const fs = require('fs');
+const { execSync } = require('child_process');
+
+const lines = ['## Session Context'];
+
+// Git info
+try {
+  const branch = execSync('git branch --show-current', { encoding: 'utf8' }).trim();
+  const status = execSync('git status --short', { encoding: 'utf8' }).trim();
+  lines.push(`- Branch: ${branch}`);
+  lines.push(`- Uncommitted: ${status.split('\n').length} files`);
+} catch(e) {}
+
+// Tech stack detection
+if (fs.existsSync('package.json')) {
+  const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+  lines.push(`- Project: ${pkg.name || 'unknown'}`);
+  lines.push(`- Node: ${process.version}`);
+}
+if (fs.existsSync('tsconfig.json')) lines.push('- TypeScript: detected');
+if (fs.existsSync('ProjectSettings/ProjectVersion.txt'))
+  lines.push('- Unity project detected');
+
+// Recent fix commits (nh&#7855;c agent v&#7873; bugs g&#7847;n &#273;&acirc;y)
+try {
+  const fixes = execSync('git log --oneline --since="7 days" --grep="fix"',
+    { encoding: 'utf8' }).trim();
+  if (fixes) lines.push(`\n## Recent fixes\n\`\`\`\n${fixes}\n\`\`\``);
+} catch(e) {}
+
+process.stdout.write(JSON.stringify({ result: lines.join('\n') }));</code></pre>
+
+<p><strong>V&iacute; d&#7909; 2: Ch&#7863;n agent &#273;&#7885;c file nh&#7841;y c&#7843;m</strong></p>
+<pre data-label=".claude/hooks/path-guard.cjs"><code>#!/usr/bin/env node
+let input = '';
+process.stdin.on('data', d => input += d);
+process.stdin.on('end', () => {
+  const { tool_input } = JSON.parse(input);
+  const path = tool_input?.file_path || tool_input?.command || '';
+  const blocked = ['.env', 'credentials', 'keystore', 'secret'];
+  const hit = blocked.find(b => path.toLowerCase().includes(b));
+  if (hit) {
+    process.stdout.write(JSON.stringify({
+      decision: 'block',
+      reason: `Blocked: file contains "${hit}"`
+    }));
+  }
+});</code></pre>
+
+<p><strong>&#272;&#259;ng k&yacute; hooks:</strong></p>
+<pre data-label="settings.json (ho&#7863;c .claude/settings.json)"><code>{
+  "hooks": {
+    "SessionStart": [
+      { "command": "node .claude/hooks/session-init.cjs", "timeout": 10000 }
+    ],
+    "PreToolUse": [
+      { "command": "node .claude/hooks/path-guard.cjs", "timeout": 3000 }
+    ]
+  }
+}</code></pre>
+
+<div class="callout warn"><div class="callout-title">Fail-open</div>Lu&ocirc;n wrap hook trong try-catch. Hook crash kh&ocirc;ng &#273;&#432;&#7907;c l&agrave;m crash agent &mdash; ch&#7881; m&#7845;t context enhancement.</div>
+
+<!-- LAYER 3 -->
+<h3>L&#7899;p 3: Passive bug tracking &mdash; agent kh&ocirc;ng l&#7863;p l&#7895;i</h3>
+<p>B&agrave;i to&aacute;n kh&oacute; nh&#7845;t: agent l&#7863;p l&#7841;i bug &#273;&atilde; fix. Y&ecirc;u c&#7847;u agent t&#7921; ghi log &rarr; kh&ocirc;ng hi&#7879;u qu&#7843; (&#273;&atilde; n&oacute;i &#7903; Part 1).</p>
+<p>Gi&#7843;i ph&aacute;p: <strong>scan git commits t&#7921; &#273;&#7897;ng</strong>, agent kh&ocirc;ng c&#7847;n l&agrave;m g&igrave;:</p>
+
+<pre data-label=".claude/hooks/collect-fixes.cjs (ch&#7841;y khi Stop)"><code>#!/usr/bin/env node
+const { execSync } = require('child_process');
+const fs = require('fs');
+const path = require('path');
+
+// File log chung cho m&#7885;i project tr&ecirc;n m&aacute;y
+const logPath = path.join(process.env.HOME, '.claude', 'fix-history.log');
+
+try {
+  // T&igrave;m fix commits trong 8h qua
+  const log = execSync(
+    'git log --oneline --since="8 hours" --grep="^fix"',
+    { encoding: 'utf8' }
+  ).trim();
+
+  if (!log) process.exit(0);
+
+  // &#272;&#7885;c log hi&#7879;n t&#7841;i &#273;&#7875; tr&aacute;nh tr&ugrave;ng
+  const existing = fs.existsSync(logPath)
+    ? fs.readFileSync(logPath, 'utf8') : '';
+
+  const entries = log.split('\n').filter(line => {
+    const hash = line.split(' ')[0];
+    return !existing.includes(hash);
+  });
+
+  if (entries.length === 0) process.exit(0);
+
+  // Append v&agrave;o log chung
+  const block = entries.map(e =>
+    `[${new Date().toISOString().slice(0,10)}] ${e}`
+  ).join('\n') + '\n';
+
+  fs.mkdirSync(path.dirname(logPath), { recursive: true });
+  fs.appendFileSync(logPath, block);
+} catch(e) {}</code></pre>
+
+<p><strong>&#272;i&#7875;m then ch&#7889;t</strong>:</p>
+<ul>
+<li>File log n&#7857;m &#7903; <code>~/.claude/fix-history.log</code> &mdash; <strong>ngo&agrave;i m&#7885;i project</strong>, m&#7885;i project ghi chung &rarr; cross-project</li>
+<li>Session-init hook &#273;&#7885;c file n&agrave;y &rarr; inject "recent fixes" v&agrave;o context &rarr; agent th&#7845;y ngay</li>
+<li>Agent kh&ocirc;ng c&#7847;n l&agrave;m g&igrave;. Commit nh&#432; b&igrave;nh th&#432;&#7901;ng. H&#7879; th&#7889;ng t&#7921; thu th&#7853;p</li>
+</ul>
+
+<p>GDA Kit m&#7903; r&#7897;ng th&ecirc;m: ph&acirc;n lo&#7841;i bug theo category, t&#7921; &#273;&#7897;ng promote pattern t&aacute;i di&#7877;n (&ge;2 sessions) th&agrave;nh gotcha. Xem <a href="gda-blog-gotcha-system.html">b&agrave;i chi ti&#7871;t</a>.</p>
+
+<h3>C&ograve;n Native Memory?</h3>
+<p>Claude Code c&oacute; native memory (<code>MEMORY.md</code>) &mdash; t&#7921; &#273;&#7897;ng load m&#7895;i session. N&oacute; x&#7917; l&yacute; t&#7889;t <strong>user preferences</strong> (ng&ocirc;n ng&#7919;, working style). &#272;&#7875; Claude Code t&#7921; qu&#7843;n. 3 l&#7899;p tr&ecirc;n gi&#7843;i quy&#7871;t ph&#7847;n m&agrave; native memory kh&ocirc;ng cover: rules enforcement, project state detection, bug prevention.</p>
+
+<div class="page-nav"><button onclick="showPage('p1')">&larr; Problem</button><span class="current">2 / 3</span><button onclick="showPage('p3')">Recap &rarr;</button></div>
+</div>
+
+<!-- ==================== RECAP ==================== -->
+<div class="page" id="page-p3">
+<h3>T&oacute;m l&#7841;i</h3>
+
+<div class="tbl"><table>
+<tr><th>L&#7899;p</th><th>L&agrave;m g&igrave;</th><th>Effort</th><th>K&#7871;t qu&#7843;</th></tr>
+<tr><td><strong>1</strong></td><td>T&#7841;o <code>CLAUDE.md</code>, chia <code>rules/</code> khi c&#7847;n</td><td>30 ph&uacute;t &ndash; v&agrave;i gi&#7901;</td><td>Agent bi&#7871;t v&agrave; tu&acirc;n th&#7911; quy t&#7855;c</td></tr>
+<tr><td><strong>2</strong></td><td>Vi&#7871;t hooks (<code>session-init</code>, <code>path-guard</code>)</td><td>V&agrave;i gi&#7901; &ndash; 1 ng&agrave;y</td><td>Agent bi&#7871;t project state, ch&#7863;n file nh&#7841;y c&#7843;m</td></tr>
+<tr><td><strong>3</strong></td><td>Passive fix tracking qua git scan</td><td>V&agrave;i gi&#7901;</td><td>Agent th&#7845;y l&#7895;i c&#361; &rarr; kh&ocirc;ng l&#7863;p l&#7841;i</td></tr>
+</table></div>
+
+<p>B&#7855;t &#273;&#7847;u t&#7915; L&#7899;p 1. T&#259;ng d&#7847;n khi c&#7847;n. M&#7895;i l&#7899;p &#273;&#7897;c l&#7853;p, c&oacute; gi&aacute; tr&#7883; ri&ecirc;ng.</p>
+
+<h3>GDA Kit l&agrave;m g&igrave; th&ecirc;m?</h3>
+<p>GDA Kit m&#7903; r&#7897;ng 3 l&#7899;p tr&ecirc;n cho domain Unity game dev:</p>
+<ul>
+<li><strong>14 rule files</strong> chuy&ecirc;n v&#7873; Unity: MonoBehaviour limits, assembly deps, SO-first, ScratchCard gotchas</li>
+<li><strong>session-init</strong> detect Unity version, URP, MCP provider, gate status, recent skill gotchas</li>
+<li><strong>Gotcha system &#273;&#7847;y &#273;&#7911;</strong>: category inference, recurring pattern promotion (&ge;2 sessions), distribute v&agrave;o t&#7915;ng skill, upstream v&#7873; Kit repo cho cross-device</li>
+<li><strong>Conditional rules inject</strong>: edit file n&agrave;o &rarr; g&#7907;i &yacute; reference doc li&ecirc;n quan</li>
+</ul>
+<p>Nh&#432;ng 3 l&#7899;p c&#417; b&#7843;n &#7903; Part 2 l&agrave; n&#7873;n t&#7843;ng &mdash; &aacute;p d&#7909;ng &#273;&#432;&#7907;c cho b&#7845;t k&#7923; d&#7921; &aacute;n n&agrave;o.</p>
+
+<blockquote>Agent kh&ocirc;ng c&oacute; tr&iacute; nh&#7899;, nh&#432;ng m&ocirc;i tr&#432;&#7901;ng c&oacute; th&#7875;. Thay v&igrave; mong agent nh&#7899; &mdash; <strong>x&acirc;y h&#7879; th&#7889;ng &#273;&#7875; m&ocirc;i tr&#432;&#7901;ng nh&#7855;c</strong>.</blockquote>
+
+<div class="page-nav"><button onclick="showPage('p2')">&larr; Solution</button><span class="current">3 / 3</span><button disabled></button></div>
+</div>
+
+<footer>GDA Kit &mdash; DK @ Apero &mdash; 2026</footer>
+
+<script>
+const pages=['home','p1','p2','p3'];
+const tabs=document.querySelectorAll('.tab-btn');
+function showPage(id){
+  pages.forEach(p=>{const el=document.getElementById('page-'+p);if(el)el.classList.toggle('active',p===id)});
+  tabs.forEach((t,i)=>t.classList.toggle('active',pages[i]===id));
+  window.scrollTo({top:0,behavior:'instant'});
+}
+</script>
+</body>
+</html>
