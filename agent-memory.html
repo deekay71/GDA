@@ -95,8 +95,8 @@ footer{text-align:center;padding:30px 20px;color:var(--dim);font-size:12px;borde
 <!-- ==================== INTRO ==================== -->
 <div class="page active" id="page-home">
 <section class="hero">
-  <h1>Agent <em>kh&ocirc;ng nh&#7899;</em> &mdash; v&agrave; c&aacute;ch GDA Kit gi&#7843;i quy&#7871;t</h1>
-  <p class="hero-sub">AI coding agent r&#7845;t gi&#7887;i trong 1 session. Nh&#432;ng session m&#7899;i, n&oacute; qu&ecirc;n s&#7841;ch &mdash; l&#7863;p l&#7895;i c&#361;, vi ph&#7841;m rules, kh&ocirc;ng bi&#7871;t project &#273;ang &#7903; &#273;&acirc;u. B&agrave;i vi&#7871;t n&agrave;y chia s&#7867; c&aacute;ch GDA Kit x&#7917; l&yacute; v&#7845;n &#273;&#7873; n&agrave;y v&agrave; h&#432;&#7899;ng d&#7851;n team &aacute;p d&#7909;ng.</p>
+  <h1>Agent <em>hay qu&ecirc;n</em> &mdash; v&agrave; c&aacute;ch gi&#7843;i quy&#7871;t</h1>
+  <p class="hero-sub">AI coding agent l&agrave;m vi&#7879;c trong context window c&oacute; gi&#7899;i h&#7841;n. Conversation d&agrave;i, session idle l&acirc;u, ho&#7863;c b&#7855;t &#273;&#7847;u session m&#7899;i &mdash; &#273;&#7873;u khi&#7871;n agent m&#7845;t d&#7847;n context: l&#7863;p l&#7895;i c&#361;, qu&ecirc;n rules, kh&ocirc;ng nh&#7899; project &#273;ang &#7903; &#273;&acirc;u. B&agrave;i vi&#7871;t n&agrave;y chia s&#7867; c&aacute;ch x&#7917; l&yacute; v&agrave; h&#432;&#7899;ng d&#7851;n &aacute;p d&#7909;ng.</p>
   <div class="hero-meta"><strong>DK @ Apero</strong> &mdash; Th&aacute;ng 5/2026</div>
 </section>
 
@@ -114,15 +114,14 @@ footer{text-align:center;padding:30px 20px;color:var(--dim);font-size:12px;borde
 
 <!-- ==================== PROBLEM ==================== -->
 <div class="page" id="page-p1">
-<h3>V&#7845;n &#273;&#7873;: M&#7895;i session l&agrave; ng&#432;&#7901;i m&#7899;i</h3>
-<p>Context window c&#7911;a LLM gi&#7889;ng b&#7897; nh&#7899; RAM &mdash; t&#7855;t m&aacute;y l&agrave; m&#7845;t. M&#7895;i session m&#7899;i, agent kh&ocirc;ng nh&#7899;:</p>
+<h3>V&#7845;n &#273;&#7873;: Agent m&#7845;t context</h3>
+<p>Context window c&#7911;a LLM c&oacute; gi&#7899;i h&#7841;n. Khi conversation d&agrave;i, c&aacute;c messages c&#361; b&#7883; n&eacute;n ho&#7863;c lo&#7841;i b&#7887; &#273;&#7875; nh&#432;&#7901;ng ch&#7895;. &#272;&#7875; session idle l&acirc;u c&#361;ng g&acirc;y hi&#7879;u &#7913;ng t&#432;&#417;ng t&#7921;. B&#7855;t &#273;&#7847;u session m&#7899;i th&igrave; context reset ho&agrave;n to&agrave;n.</p>
+<p>K&#7871;t qu&#7843;: agent <strong>qu&ecirc;n ngay trong l&uacute;c l&agrave;m vi&#7879;c</strong>, kh&ocirc;ng c&#7847;n &#273;&#7907;i session m&#7899;i:</p>
 <ul>
-<li>L&#7895;i &#273;&atilde; fix h&ocirc;m qua (v&agrave; s&#7869; m&#7855;c l&#7841;i)</li>
-<li>Quy t&#7855;c coding c&#7911;a d&#7921; &aacute;n (v&agrave; s&#7869; vi ph&#7841;m)</li>
-<li>Project &#273;ang &#7903; phase n&agrave;o, d&ugrave;ng g&igrave;, c&#7845;m g&igrave;</li>
+<li>&#272;&#7847;u session &#273;&#432;&#7907;c d&#7863;n "kh&ocirc;ng d&ugrave;ng async Start()" &mdash; cu&#7889;i session vi&#7871;t <code>async UniTaskVoid Start()</code></li>
+<li>Fix bug xong, 20 messages sau g&#7863;p l&#7841;i &#273;&uacute;ng l&#7895;i &#273;&oacute; &mdash; v&igrave; context fix &#273;&atilde; b&#7883; n&eacute;n</li>
+<li>Session m&#7899;i th&igrave; kh&ocirc;ng nh&#7899; g&igrave; t&#7915; session tr&#432;&#7899;c (tr&#7915; native memory)</li>
 </ul>
-
-<p>V&iacute; d&#7909; th&#7921;c t&#7871;: Session 1, agent fix bug <code>async UniTaskVoid Start()</code> kh&ocirc;ng ch&#7841;y khi load scene &mdash; m&#7845;t 30 ph&uacute;t. Session 3, g&#7863;p l&#7841;i ch&iacute;nh x&aacute;c l&#7895;i &#273;&oacute; &mdash; l&#7841;i m&#7845;t 30 ph&uacute;t.</p>
 
 <h3>T&#7841;i sao "b&#7843;o n&oacute; nh&#7899;" kh&ocirc;ng ho&#7841;t &#273;&#7897;ng</h3>
 <p>Ph&#7843;n &#7913;ng &#273;&#7847;u ti&ecirc;n: vi&#7871;t instructions "sau khi fix bug, ghi l&#7841;i v&agrave;o file log". Th&#7921;c t&#7871; sau 10 sessions:</p>
