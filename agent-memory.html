@@ -295,9 +295,15 @@ try {
 <p><strong>&#272;i&#7875;m then ch&#7889;t</strong>:</p>
 <ul>
 <li>File log n&#7857;m &#7903; <code>~/.claude/fix-history.log</code> &mdash; <strong>ngo&agrave;i m&#7885;i project</strong>, m&#7885;i project ghi chung &rarr; cross-project</li>
-<li>Session-init hook &#273;&#7885;c file n&agrave;y &rarr; inject "recent fixes" v&agrave;o context &rarr; agent th&#7845;y ngay</li>
 <li>Agent kh&ocirc;ng c&#7847;n l&agrave;m g&igrave;. Commit nh&#432; b&igrave;nh th&#432;&#7901;ng. H&#7879; th&#7889;ng t&#7921; thu th&#7853;p</li>
+<li>File n&agrave;y s&#7869; <strong>l&#7899;n d&#7847;n theo th&#7901;i gian</strong> &mdash; m&#7895;i session th&ecirc;m v&agrave;i entries, qua h&agrave;ng ch&#7909;c sessions tr&#7903; th&agrave;nh kho ki&#7871;n th&#7913;c fix bug c&#7911;a b&#7841;n</li>
 </ul>
+
+<div class="callout info"><div class="callout-title">fix-history kh&ocirc;ng t&#7921; inject v&agrave;o context</div>
+File n&agrave;y l&agrave; <strong>raw data</strong>, kh&ocirc;ng &#273;&#432;&#7907;c t&#7921; &#273;&#7897;ng &#273;&#432;a v&agrave;o context c&#7911;a agent. N&oacute; l&agrave; ngu&#7891;n d&#7919; li&#7879;u &#273;&#7875; b&#432;&#7899;c ti&#7871;p theo x&#7917; l&yacute;:<br><br>
+&bull; <strong>D&ugrave;ng &#273;&#417;n gi&#7843;n</strong>: session-init hook &#273;&#7885;c file &rarr; l&#7885;c entries g&#7847;n &#273;&acirc;y &rarr; inject v&agrave;o context (b&#7841;n t&#7921; vi&#7871;t logic n&agrave;y)<br>
+&bull; <strong>D&ugrave;ng n&acirc;ng cao</strong> (GDA Kit): hook ph&acirc;n lo&#7841;i theo category, detect pattern t&aacute;i di&#7877;n, t&#7921; &#273;&#7897;ng promote th&agrave;nh gotcha &rarr; inject ch&#7881; nh&#7919;ng g&igrave; recurring<br><br>
+N&#7871;u b&#7841;n ch&#7881; ghi m&agrave; kh&ocirc;ng &#273;&#7885;c l&#7841;i &rarr; file v&ocirc; &iacute;ch. C&#7847;n hook &#273;&#7885;c v&agrave; inject v&agrave;o context &#273;&#7875; agent th&#7845;y &#273;&#432;&#7907;c.</div>
 
 <p>GDA Kit m&#7903; r&#7897;ng th&ecirc;m: ph&acirc;n lo&#7841;i bug theo category, t&#7921; &#273;&#7897;ng promote pattern t&aacute;i di&#7877;n (&ge;2 sessions) th&agrave;nh gotcha. Xem <a href="gda-blog-gotcha-system.html">b&agrave;i chi ti&#7871;t</a>.</p>
 
