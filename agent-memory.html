@@ -326,6 +326,17 @@ File <code>~/.claude/fix-history.log</code> s&#7869; <strong>l&#7899;n d&#7847;n
 </ul>
 <p>Nh&#432;ng 3 l&#7899;p c&#417; b&#7843;n &#7903; Part 2 l&agrave; n&#7873;n t&#7843;ng &mdash; &aacute;p d&#7909;ng &#273;&#432;&#7907;c cho b&#7845;t k&#7923; d&#7921; &aacute;n n&agrave;o.</p>
 
+<h3>T&#7841;i sao kh&ocirc;ng inject gotcha tr&#7921;c ti&#7871;p v&agrave;o context?</h3>
+<p>Ch&uacute;ng t&ocirc;i &#273;&atilde; th&#7917; 2 c&aacute;ch v&agrave; c&#7843; 2 &#273;&#7873;u kh&ocirc;ng ph&ugrave; h&#7907;p:</p>
+<ul>
+<li><strong>Inject t&#7845;t c&#7843; gotchas l&uacute;c session start</strong>: 53 files = ~14,000 d&ograve;ng. Kh&ocirc;ng kh&#7843; thi v&#7873; token.</li>
+<li><strong>Hardcode gotcha v&agrave;o hook</strong>: match keyword &rarr; inject 1 d&ograve;ng. Ho&#7841;t &#273;&#7897;ng t&#7889;t, nh&#432;ng m&#7895;i gotcha m&#7899;i ph&#7843;i s&#7917;a code hook &rarr; kh&ocirc;ng scale.</li>
+</ul>
+<p>C&aacute;ch hi&#7879;n t&#7841;i &mdash; <strong>session-init nh&#7855;c t&ecirc;n skill c&oacute; gotchas m&#7899;i, agent t&#7921; &#273;&#7885;c file</strong> &mdash; &#273;&#417;n gi&#7843;n v&agrave; scale t&#7889;t. Agent &#273;&atilde; c&oacute; tool <code>Read</code> &#273;&#7875; &#273;&#7885;c b&#7845;t k&#7923; file n&agrave;o, v&#7845;n &#273;&#7873; ch&#7881; l&agrave; n&oacute; c&#7847;n bi&#7871;t <strong>&#273;&#7885;c file n&agrave;o</strong> &mdash; v&agrave; session-init gi&#7843;i quy&#7871;t &#273;&uacute;ng vi&#7879;c &#273;&oacute;.</p>
+
+<div class="callout info"><div class="callout-title">C&ograve;n RAG?</div>
+RAG (Retrieval-Augmented Generation) &mdash; query ch&#7881; l&#7845;y &#273;&uacute;ng ph&#7847;n c&#7847;n thay v&igrave; load t&#7845;t c&#7843; &mdash; nghe h&#7907;p l&yacute; cho b&agrave;i to&aacute;n n&agrave;y. Nh&#432;ng v&#7899;i quy m&ocirc; hi&#7879;n t&#7841;i (12 categories, session-init nh&#7855;c t&ecirc;n), <strong>ch&#432;a c&#7847;n</strong>. Agent &#273;&atilde; c&oacute; tool &#273;&#7885;c file, ch&#7881; c&#7847;n bi&#7871;t &#273;&#7885;c file n&agrave;o. RAG &#273;&aacute;ng c&acirc;n nh&#7855;c khi gotchas scale l&ecirc;n 100+ categories ho&#7863;c c&#7847;n semantic search ("code n&agrave;y c&oacute; th&#7875; g&acirc;y memory leak" &rarr; match gotcha v&#7873; pooling d&ugrave; kh&ocirc;ng c&oacute; keyword tr&ugrave;ng).</div>
+
 <blockquote>Agent kh&ocirc;ng c&oacute; tr&iacute; nh&#7899;, nh&#432;ng m&ocirc;i tr&#432;&#7901;ng c&oacute; th&#7875;. Thay v&igrave; mong agent nh&#7899; &mdash; <strong>x&acirc;y h&#7879; th&#7889;ng &#273;&#7875; m&ocirc;i tr&#432;&#7901;ng nh&#7855;c</strong>.</blockquote>
 
 <div class="page-nav"><button onclick="showPage('p2')">&larr; Solution</button><span class="current">3 / 3</span><button disabled></button></div>
