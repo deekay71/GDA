@@ -144,20 +144,20 @@ footer{text-align:center;padding:30px 20px;color:var(--dim);font-size:12px;borde
 
 <!-- ==================== SOLUTION ==================== -->
 <div class="page" id="page-p2">
-<h3>Nguy&ecirc;n t&#7855;c: kh&ocirc;ng s&#7917;a agent, s&#7917;a m&ocirc;i tr&#432;&#7901;ng</h3>
-<p>Thay v&igrave; mong agent nh&#7899;, x&acirc;y h&#7879; th&#7889;ng &#273;&#7875; <strong>m&ocirc;i tr&#432;&#7901;ng nh&#7855;c</strong>. 3 l&#7899;p d&#432;&#7899;i &#273;&acirc;y &aacute;p d&#7909;ng &#273;&#432;&#7907;c cho b&#7845;t k&#7923; d&#7921; &aacute;n n&agrave;o d&ugrave;ng Claude Code, kh&ocirc;ng c&#7847;n GDA Kit.</p>
+<h3>Setup guide &mdash; 3 b&#432;&#7899;c, copy-paste &#273;&#432;&#7907;c ngay</h3>
+<p>Kh&ocirc;ng c&#7847;n GDA Kit. Ch&#7881; c&#7847;n Claude Code + 3 b&#432;&#7899;c d&#432;&#7899;i &#273;&acirc;y.</p>
 
-<!-- LAYER 1 -->
-<h3>L&#7899;p 1: CLAUDE.md + Rules &mdash; agent bi&#7871;t quy t&#7855;c</h3>
-<p>T&#7841;o file <code>CLAUDE.md</code> &#7903; root d&#7921; &aacute;n. Claude Code t&#7921; &#273;&#7897;ng load file n&agrave;y m&#7895;i session. Vi&#7871;t g&igrave; v&agrave;o &#273;&acirc;y, agent s&#7869; tu&acirc;n th&#7911;.</p>
+<!-- STEP 1 -->
+<h3>B&#432;&#7899;c 1: T&#7841;o CLAUDE.md</h3>
+<p>T&#7841;o file <code>CLAUDE.md</code> &#7903; root d&#7921; &aacute;n. Claude Code t&#7921; &#273;&#7897;ng load m&#7895;i session.</p>
 
-<pre data-label="CLAUDE.md (m&#7851;u)"><code># Project: My App
+<pre data-label="t&#7841;o file"><code>touch CLAUDE.md</code></pre>
+<pre data-label="CLAUDE.md &mdash; copy v&agrave; s&#7917;a cho ph&ugrave; h&#7907;p"><code># Project: [t&ecirc;n d&#7921; &aacute;n]
 
 ## Coding Rules
-- PascalCase classes, camelCase variables
-- Kh&ocirc;ng d&ugrave;ng any trong TypeScript
-- Repository pattern cho data access
-- M&#7895;i file &lt; 200 d&ograve;ng
+- [quy t&#7855;c 1, v&iacute; d&#7909;: PascalCase classes, camelCase variables]
+- [quy t&#7855;c 2, v&iacute; d&#7909;: kh&ocirc;ng d&ugrave;ng any trong TypeScript]
+- [quy t&#7855;c 3, v&iacute; d&#7909;: m&#7895;i file &lt; 200 d&ograve;ng]
 
 ## Forbidden
 - Kh&ocirc;ng console.log trong production
@@ -169,75 +169,79 @@ footer{text-align:center;padding:30px 20px;color:var(--dim);font-size:12px;borde
 - Kh&ocirc;ng t&#7921; commit khi ch&#432;a &#273;&#432;&#7907;c y&ecirc;u c&#7847;u
 - H&#7887;i tr&#432;&#7899;c khi refactor &gt; 3 files</code></pre>
 
-<p>Khi file n&agrave;y v&#432;&#7907;t ~200 d&ograve;ng, chia nh&#7887; v&agrave;o <code>.claude/rules/</code>:</p>
-<pre><code>.claude/rules/
-&#9500;&#9472;&#9472; code-quality.md      # Coding standards
-&#9500;&#9472;&#9472; architecture.md      # Project structure, deps
-&#9500;&#9472;&#9472; testing.md           # Test conventions
-&#9492;&#9472;&#9472; working-style.md     # C&aacute;ch l&agrave;m vi&#7879;c</code></pre>
-<p>Claude Code <strong>t&#7921; &#273;&#7897;ng inject t&#7845;t c&#7843; files</strong> trong <code>.claude/rules/</code> v&agrave;o m&#7895;i turn. Kh&ocirc;ng c&#7847;n agent nh&#7899; &#273;&#7885;c.</p>
+<p>Khi file v&#432;&#7907;t ~200 d&ograve;ng, chia v&agrave;o <code>.claude/rules/</code> &mdash; Claude Code t&#7921; &#273;&#7897;ng inject t&#7845;t c&#7843; files trong th&#432; m&#7909;c n&agrave;y:</p>
+<pre data-label="chia rules"><code>mkdir -p .claude/rules
+# T&aacute;ch t&#7915;ng m&#7909;c trong CLAUDE.md th&agrave;nh file ri&ecirc;ng:
+# .claude/rules/code-quality.md
+# .claude/rules/architecture.md
+# .claude/rules/testing.md
+# .claude/rules/working-style.md</code></pre>
 
-<div class="callout tip"><div class="callout-title">T&#7841;i sao chia nh&#7887;?</div>1 file 2000 d&ograve;ng = agent d&#7877; b&#7887; qua. Nhi&#7873;u files ng&#7855;n, m&#7895;i file 1 ch&#7911; &#273;&#7873; = agent x&#7917; l&yacute; t&#7889;t h&#417;n. GDA Kit d&ugrave;ng 14 rule files, m&#7895;i file ~50 d&ograve;ng.</div>
+<div class="callout info"><div class="callout-title">Cursor / Copilot</div>T&#432;&#417;ng &#273;&#432;&#417;ng: <code>.cursorrules</code> (Cursor), <code>.github/copilot-instructions.md</code> (Copilot).</div>
 
-<div class="callout info"><div class="callout-title">Cursor / Copilot</div>T&#432;&#417;ng &#273;&#432;&#417;ng: <code>.cursorrules</code> (Cursor), <code>.github/copilot-instructions.md</code> (Copilot). C&ugrave;ng &yacute; t&#432;&#7903;ng, kh&aacute;c t&ecirc;n file.</div>
+<!-- STEP 2 -->
+<h3>B&#432;&#7899;c 2: T&#7841;o hooks</h3>
+<p>Hooks l&agrave; scripts ch&#7841;y t&#7921; &#273;&#7897;ng khi c&oacute; s&#7921; ki&#7879;n. Agent kh&ocirc;ng c&#7847;n l&agrave;m g&igrave;.</p>
 
-<!-- LAYER 2 -->
-<h3>L&#7899;p 2: Hooks &mdash; agent bi&#7871;t project &#273;ang &#7903; &#273;&acirc;u</h3>
-<p>Hooks l&agrave; scripts ch&#7841;y t&#7921; &#273;&#7897;ng khi c&oacute; s&#7921; ki&#7879;n. Agent kh&ocirc;ng c&#7847;n l&agrave;m g&igrave;. Claude Code h&#7895; tr&#7907; c&aacute;c events: <code>SessionStart</code>, <code>PreToolUse</code>, <code>PostToolUse</code>, <code>Stop</code>.</p>
-
-<p><strong>V&iacute; d&#7909; 1: Inject project context m&#7895;i session</strong></p>
-<pre data-label=".claude/hooks/session-init.cjs"><code>#!/usr/bin/env node
+<h4>2a. Session init &mdash; inject project context m&#7895;i session</h4>
+<pre data-label="mkdir -p .claude/hooks"><code>mkdir -p .claude/hooks</code></pre>
+<pre data-label=".claude/hooks/session-init.cjs &mdash; t&#7841;o file n&agrave;y"><code>#!/usr/bin/env node
 const fs = require('fs');
 const { execSync } = require('child_process');
 
-const lines = ['## Session Context'];
-
-// Git info
 try {
+  const lines = ['## Session Context'];
+
+  // Git
   const branch = execSync('git branch --show-current', { encoding: 'utf8' }).trim();
   const status = execSync('git status --short', { encoding: 'utf8' }).trim();
   lines.push(`- Branch: ${branch}`);
-  lines.push(`- Uncommitted: ${status.split('\n').length} files`);
-} catch(e) {}
+  if (status) lines.push(`- Uncommitted: ${status.split('\\n').length} files`);
 
-// Tech stack detection
-if (fs.existsSync('package.json')) {
-  const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-  lines.push(`- Project: ${pkg.name || 'unknown'}`);
-  lines.push(`- Node: ${process.version}`);
-}
-if (fs.existsSync('tsconfig.json')) lines.push('- TypeScript: detected');
-if (fs.existsSync('ProjectSettings/ProjectVersion.txt'))
-  lines.push('- Unity project detected');
+  // Tech stack (th&ecirc;m/b&#7899;t t&ugrave;y d&#7921; &aacute;n)
+  if (fs.existsSync('package.json')) {
+    const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+    lines.push(`- Project: ${pkg.name || 'unknown'}`);
+  }
+  if (fs.existsSync('tsconfig.json')) lines.push('- TypeScript: yes');
+  if (fs.existsSync('ProjectSettings/ProjectVersion.txt'))
+    lines.push('- Unity project');
 
-// Recent fix commits (nh&#7855;c agent v&#7873; bugs g&#7847;n &#273;&acirc;y)
-try {
-  const fixes = execSync('git log --oneline --since="7 days" --grep="fix"',
-    { encoding: 'utf8' }).trim();
-  if (fixes) lines.push(`\n## Recent fixes\n\`\`\`\n${fixes}\n\`\`\``);
-} catch(e) {}
+  // Recent fix commits &mdash; nh&#7855;c agent v&#7873; bugs g&#7847;n &#273;&acirc;y
+  const fixes = execSync(
+    'git log --oneline --since="7 days" --grep="fix"',
+    { encoding: 'utf8' }
+  ).trim();
+  if (fixes) lines.push(`\\n## Recent fixes\\n\`\`\`\\n${fixes}\\n\`\`\``);
 
-process.stdout.write(JSON.stringify({ result: lines.join('\n') }));</code></pre>
+  process.stdout.write(JSON.stringify({ result: lines.join('\\n') }));
+} catch(e) {
+  // Fail-open: hook l&#7895;i th&igrave; tr&#7843; r&#7895;ng, agent v&#7851;n ch&#7841;y
+  process.stdout.write(JSON.stringify({ result: '' }));
+}</code></pre>
 
-<p><strong>V&iacute; d&#7909; 2: Ch&#7863;n agent &#273;&#7885;c file nh&#7841;y c&#7843;m</strong></p>
-<pre data-label=".claude/hooks/path-guard.cjs"><code>#!/usr/bin/env node
+<h4>2b. Path guard &mdash; ch&#7863;n file nh&#7841;y c&#7843;m</h4>
+<pre data-label=".claude/hooks/path-guard.cjs &mdash; t&#7841;o file n&agrave;y"><code>#!/usr/bin/env node
 let input = '';
 process.stdin.on('data', d => input += d);
 process.stdin.on('end', () => {
-  const { tool_input } = JSON.parse(input);
-  const path = tool_input?.file_path || tool_input?.command || '';
-  const blocked = ['.env', 'credentials', 'keystore', 'secret'];
-  const hit = blocked.find(b => path.toLowerCase().includes(b));
-  if (hit) {
-    process.stdout.write(JSON.stringify({
-      decision: 'block',
-      reason: `Blocked: file contains "${hit}"`
-    }));
-  }
+  try {
+    const { tool_input } = JSON.parse(input);
+    const p = (tool_input?.file_path || tool_input?.command || '').toLowerCase();
+    const blocked = ['.env', 'credentials', 'keystore', 'secret'];
+    const hit = blocked.find(b => p.includes(b));
+    if (hit) {
+      process.stdout.write(JSON.stringify({
+        decision: 'block',
+        reason: `Blocked: path contains "${hit}"`
+      }));
+    }
+  } catch(e) {}
 });</code></pre>
 
-<p><strong>&#272;&#259;ng k&yacute; hooks:</strong></p>
-<pre data-label="settings.json (ho&#7863;c .claude/settings.json)"><code>{
+<h4>2c. &#272;&#259;ng k&yacute; hooks</h4>
+<p>Th&ecirc;m v&agrave;o file <code>.claude/settings.json</code> (project-level) ho&#7863;c <code>~/.claude/settings.json</code> (global):</p>
+<pre data-label=".claude/settings.json &mdash; th&ecirc;m ho&#7863;c t&#7841;o m&#7899;i"><code>{
   "hooks": {
     "SessionStart": [
       { "command": "node .claude/hooks/session-init.cjs", "timeout": 10000 }
@@ -248,67 +252,53 @@ process.stdin.on('end', () => {
   }
 }</code></pre>
 
-<div class="callout warn"><div class="callout-title">Fail-open</div>Lu&ocirc;n wrap hook trong try-catch. Hook crash kh&ocirc;ng &#273;&#432;&#7907;c l&agrave;m crash agent &mdash; ch&#7881; m&#7845;t context enhancement.</div>
+<!-- STEP 3 -->
+<h3>B&#432;&#7899;c 3: Passive bug tracking</h3>
+<p>T&#7921; &#273;&#7897;ng ghi l&#7841;i m&#7895;i fix commit. Agent kh&ocirc;ng c&#7847;n l&agrave;m g&igrave; &mdash; commit b&igrave;nh th&#432;&#7901;ng, hook t&#7921; thu th&#7853;p.</p>
 
-<!-- LAYER 3 -->
-<h3>L&#7899;p 3: Passive bug tracking &mdash; agent kh&ocirc;ng l&#7863;p l&#7895;i</h3>
-<p>B&agrave;i to&aacute;n kh&oacute; nh&#7845;t: agent l&#7863;p l&#7841;i bug &#273;&atilde; fix. Y&ecirc;u c&#7847;u agent t&#7921; ghi log &rarr; kh&ocirc;ng hi&#7879;u qu&#7843; (&#273;&atilde; n&oacute;i &#7903; Part 1).</p>
-<p>Gi&#7843;i ph&aacute;p: <strong>scan git commits t&#7921; &#273;&#7897;ng</strong>, agent kh&ocirc;ng c&#7847;n l&agrave;m g&igrave;:</p>
-
-<pre data-label=".claude/hooks/collect-fixes.cjs (ch&#7841;y khi Stop)"><code>#!/usr/bin/env node
+<pre data-label=".claude/hooks/collect-fixes.cjs &mdash; t&#7841;o file n&agrave;y"><code>#!/usr/bin/env node
 const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-// File log chung cho m&#7885;i project tr&ecirc;n m&aacute;y
+// Log chung cho M&#7884;I project tr&ecirc;n m&aacute;y (cross-project)
 const logPath = path.join(process.env.HOME, '.claude', 'fix-history.log');
 
 try {
-  // T&igrave;m fix commits trong 8h qua
   const log = execSync(
     'git log --oneline --since="8 hours" --grep="^fix"',
     { encoding: 'utf8' }
   ).trim();
-
   if (!log) process.exit(0);
 
-  // &#272;&#7885;c log hi&#7879;n t&#7841;i &#273;&#7875; tr&aacute;nh tr&ugrave;ng
+  // Tr&aacute;nh ghi tr&ugrave;ng
   const existing = fs.existsSync(logPath)
     ? fs.readFileSync(logPath, 'utf8') : '';
+  const entries = log.split('\\n').filter(line =>
+    !existing.includes(line.split(' ')[0])
+  );
+  if (!entries.length) process.exit(0);
 
-  const entries = log.split('\n').filter(line => {
-    const hash = line.split(' ')[0];
-    return !existing.includes(hash);
-  });
-
-  if (entries.length === 0) process.exit(0);
-
-  // Append v&agrave;o log chung
+  // Append
   const block = entries.map(e =>
     `[${new Date().toISOString().slice(0,10)}] ${e}`
-  ).join('\n') + '\n';
-
+  ).join('\\n') + '\\n';
   fs.mkdirSync(path.dirname(logPath), { recursive: true });
   fs.appendFileSync(logPath, block);
 } catch(e) {}</code></pre>
 
-<p><strong>&#272;i&#7875;m then ch&#7889;t</strong>:</p>
-<ul>
-<li>File log n&#7857;m &#7903; <code>~/.claude/fix-history.log</code> &mdash; <strong>ngo&agrave;i m&#7885;i project</strong>, m&#7885;i project ghi chung &rarr; cross-project</li>
-<li>Agent kh&ocirc;ng c&#7847;n l&agrave;m g&igrave;. Commit nh&#432; b&igrave;nh th&#432;&#7901;ng. H&#7879; th&#7889;ng t&#7921; thu th&#7853;p</li>
-<li>File n&agrave;y s&#7869; <strong>l&#7899;n d&#7847;n theo th&#7901;i gian</strong> &mdash; m&#7895;i session th&ecirc;m v&agrave;i entries, qua h&agrave;ng ch&#7909;c sessions tr&#7903; th&agrave;nh kho ki&#7871;n th&#7913;c fix bug c&#7911;a b&#7841;n</li>
-</ul>
+<p>&#272;&#259;ng k&yacute; &mdash; th&ecirc;m v&agrave;o <code>.claude/settings.json</code> &#273;&atilde; t&#7841;o &#7903; b&#432;&#7899;c 2c:</p>
+<pre data-label="th&ecirc;m v&agrave;o hooks trong settings.json"><code>"Stop": [
+  { "command": "node .claude/hooks/collect-fixes.cjs", "timeout": 5000 }
+]</code></pre>
 
-<div class="callout info"><div class="callout-title">fix-history kh&ocirc;ng t&#7921; inject v&agrave;o context</div>
-File n&agrave;y l&agrave; <strong>raw data</strong>, kh&ocirc;ng &#273;&#432;&#7907;c t&#7921; &#273;&#7897;ng &#273;&#432;a v&agrave;o context c&#7911;a agent. N&oacute; l&agrave; ngu&#7891;n d&#7919; li&#7879;u &#273;&#7875; b&#432;&#7899;c ti&#7871;p theo x&#7917; l&yacute;:<br><br>
-&bull; <strong>D&ugrave;ng &#273;&#417;n gi&#7843;n</strong>: session-init hook &#273;&#7885;c file &rarr; l&#7885;c entries g&#7847;n &#273;&acirc;y &rarr; inject v&agrave;o context (b&#7841;n t&#7921; vi&#7871;t logic n&agrave;y)<br>
-&bull; <strong>D&ugrave;ng n&acirc;ng cao</strong> (GDA Kit): hook ph&acirc;n lo&#7841;i theo category, detect pattern t&aacute;i di&#7877;n, t&#7921; &#273;&#7897;ng promote th&agrave;nh gotcha &rarr; inject ch&#7881; nh&#7919;ng g&igrave; recurring<br><br>
-N&#7871;u b&#7841;n ch&#7881; ghi m&agrave; kh&ocirc;ng &#273;&#7885;c l&#7841;i &rarr; file v&ocirc; &iacute;ch. C&#7847;n hook &#273;&#7885;c v&agrave; inject v&agrave;o context &#273;&#7875; agent th&#7845;y &#273;&#432;&#7907;c.</div>
-
-<p>GDA Kit m&#7903; r&#7897;ng th&ecirc;m: ph&acirc;n lo&#7841;i bug theo category, t&#7921; &#273;&#7897;ng promote pattern t&aacute;i di&#7877;n (&ge;2 sessions) th&agrave;nh gotcha. Xem <a href="gotcha-system.html">b&agrave;i chi ti&#7871;t</a>.</p>
+<div class="callout warn"><div class="callout-title">fix-history l&agrave; raw data, kh&ocirc;ng t&#7921; inject</div>
+File <code>~/.claude/fix-history.log</code> s&#7869; <strong>l&#7899;n d&#7847;n theo th&#7901;i gian</strong> &mdash; tr&#7903; th&agrave;nh kho ki&#7871;n th&#7913;c fix bug c&#7911;a b&#7841;n. Nh&#432;ng n&oacute; <strong>kh&ocirc;ng t&#7921; &#273;&#7897;ng &#273;&#432;a v&agrave;o context</strong>. &#272;&#7875; agent th&#7845;y &#273;&#432;&#7907;c, b&#7841;n c&#7847;n:<br><br>
+&bull; <strong>C&aacute;ch 1</strong>: Th&ecirc;m logic &#273;&#7885;c file n&agrave;y v&agrave;o <code>session-init.cjs</code> (l&#7885;c entries g&#7847;n &#273;&acirc;y &rarr; inject v&agrave;o context)<br>
+&bull; <strong>C&aacute;ch 2</strong> (GDA Kit): Ph&acirc;n lo&#7841;i theo category, detect pattern t&aacute;i di&#7877;n, promote th&agrave;nh gotcha &mdash; xem <a href="gotcha-system.html">b&agrave;i chi ti&#7871;t</a></div>
 
 <h3>C&ograve;n Native Memory?</h3>
-<p>Claude Code c&oacute; native memory (<code>MEMORY.md</code>) &mdash; t&#7921; &#273;&#7897;ng load m&#7895;i session. N&oacute; x&#7917; l&yacute; t&#7889;t <strong>user preferences</strong> (ng&ocirc;n ng&#7919;, working style). &#272;&#7875; Claude Code t&#7921; qu&#7843;n. 3 l&#7899;p tr&ecirc;n gi&#7843;i quy&#7871;t ph&#7847;n m&agrave; native memory kh&ocirc;ng cover: rules enforcement, project state detection, bug prevention.</p>
+<p>Claude Code c&oacute; native memory (<code>MEMORY.md</code>) &mdash; t&#7921; &#273;&#7897;ng load m&#7895;i session. N&oacute; x&#7917; l&yacute; t&#7889;t <strong>user preferences</strong> (ng&ocirc;n ng&#7919;, working style). &#272;&#7875; Claude Code t&#7921; qu&#7843;n, kh&ocirc;ng c&#7847;n setup g&igrave;. 3 b&#432;&#7899;c tr&ecirc;n gi&#7843;i quy&#7871;t ph&#7847;n m&agrave; native memory kh&ocirc;ng cover: rules enforcement, project state detection, bug tracking.</p>
 
 <div class="page-nav"><button onclick="showPage('p1')">&larr; Problem</button><span class="current">2 / 3</span><button onclick="showPage('p3')">Recap &rarr;</button></div>
 </div>
