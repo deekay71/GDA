@@ -320,21 +320,36 @@ File <code>~/.claude/fix-history.log</code> s&#7869; <strong>l&#7899;n d&#7847;n
 <ul>
 <li><strong>14 rule files</strong> chuy&ecirc;n v&#7873; Unity: MonoBehaviour limits, assembly deps, SO-first, ScratchCard gotchas</li>
 <li><strong>session-init</strong> detect Unity version, URP, MCP provider, gate status, recent skill gotchas</li>
-<li><strong>Gotcha system &#273;&#7847;y &#273;&#7911;</strong>: category inference, recurring pattern promotion (&ge;2 sessions), distribute v&agrave;o t&#7915;ng skill, upstream v&#7873; Kit repo cho cross-device</li>
-<li><strong>Conditional rules inject</strong>: edit file n&agrave;o &rarr; g&#7907;i &yacute; reference doc li&ecirc;n quan</li>
+<li><strong>Gotcha system + lightweight RAG</strong>: <code>gotcha-index.json</code> v&#7899;i taxonomy ph&acirc;n c&#7845;p, auto-promote recurring patterns, inject gotcha theo context file &#273;ang edit</li>
+<li><strong>Conditional rules inject</strong>: edit file n&agrave;o &rarr; g&#7907;i &yacute; reference doc + gotcha li&ecirc;n quan</li>
 </ul>
 <p>Nh&#432;ng 3 l&#7899;p c&#417; b&#7843;n &#7903; Part 2 l&agrave; n&#7873;n t&#7843;ng &mdash; &aacute;p d&#7909;ng &#273;&#432;&#7907;c cho b&#7845;t k&#7923; d&#7921; &aacute;n n&agrave;o.</p>
 
-<h3>T&#7841;i sao kh&ocirc;ng inject gotcha tr&#7921;c ti&#7871;p v&agrave;o context?</h3>
-<p>Ch&uacute;ng t&ocirc;i &#273;&atilde; th&#7917; 2 c&aacute;ch v&agrave; c&#7843; 2 &#273;&#7873;u kh&ocirc;ng ph&ugrave; h&#7907;p:</p>
-<ul>
-<li><strong>Inject t&#7845;t c&#7843; gotchas l&uacute;c session start</strong>: 53 files = ~14,000 d&ograve;ng. Kh&ocirc;ng kh&#7843; thi v&#7873; token.</li>
-<li><strong>Hardcode gotcha v&agrave;o hook</strong>: match keyword &rarr; inject 1 d&ograve;ng. Ho&#7841;t &#273;&#7897;ng t&#7889;t, nh&#432;ng m&#7895;i gotcha m&#7899;i ph&#7843;i s&#7917;a code hook &rarr; kh&ocirc;ng scale.</li>
-</ul>
-<p>C&aacute;ch hi&#7879;n t&#7841;i &mdash; <strong>session-init nh&#7855;c t&ecirc;n skill c&oacute; gotchas m&#7899;i, agent t&#7921; &#273;&#7885;c file</strong> &mdash; &#273;&#417;n gi&#7843;n v&agrave; scale t&#7889;t. Agent &#273;&atilde; c&oacute; tool <code>Read</code> &#273;&#7875; &#273;&#7885;c b&#7845;t k&#7923; file n&agrave;o, v&#7845;n &#273;&#7873; ch&#7881; l&agrave; n&oacute; c&#7847;n bi&#7871;t <strong>&#273;&#7885;c file n&agrave;o</strong> &mdash; v&agrave; session-init gi&#7843;i quy&#7871;t &#273;&uacute;ng vi&#7879;c &#273;&oacute;.</p>
+<h3>Inject gotcha th&ocirc;ng minh &mdash; lightweight RAG</h3>
+<p>Inject t&#7845;t c&#7843; gotchas l&uacute;c session start kh&ocirc;ng kh&#7843; thi (53 files = ~14,000 d&ograve;ng). Hardcode v&agrave;o hook th&igrave; m&#7895;i gotcha m&#7899;i ph&#7843;i s&#7917;a code.</p>
+<p>GDA Kit d&ugrave;ng <strong>data-driven approach</strong>: t&aacute;ch data ra file JSON, hook ch&#7881; &#273;&#7885;c v&agrave; match:</p>
+<pre data-label="gotcha-index.json (data, th&ecirc;m entry kh&ocirc;ng s&#7917;a code)"><code>[
+  {
+    "category": "core/async/lifecycle",
+    "keywords": ["async", "start()", "awake()", "unitask"],
+    "summary": "NEVER async Start(). Use void Start() { InitAsync().Forget(); }"
+  },
+  {
+    "category": "pkg/scratchcard/init-timing",
+    "keywords": ["scratchcard", "getprogress", "brushsize"],
+    "summary": "Wait 5 frames after Init(). NEVER BrushSize=0."
+  }
+]</code></pre>
+<p>Hook &#273;&#7885;c index, match keywords v&#7899;i file &#273;ang edit, inject ch&#7881; gotcha li&ecirc;n quan:</p>
+<pre><code>Agent edit CleaningStep.cs (ch&#7913;a "scratchcard")
+  &rarr; [Gotcha Alert] pkg/scratchcard/init-timing: Wait 5 frames after Init()...
 
-<div class="callout info"><div class="callout-title">C&ograve;n RAG?</div>
-RAG (Retrieval-Augmented Generation) &mdash; query ch&#7881; l&#7845;y &#273;&uacute;ng ph&#7847;n c&#7847;n thay v&igrave; load t&#7845;t c&#7843; &mdash; nghe h&#7907;p l&yacute; cho b&agrave;i to&aacute;n n&agrave;y. Nh&#432;ng v&#7899;i quy m&ocirc; hi&#7879;n t&#7841;i (12 categories, session-init nh&#7855;c t&ecirc;n), <strong>ch&#432;a c&#7847;n</strong>. Agent &#273;&atilde; c&oacute; tool &#273;&#7885;c file, ch&#7881; c&#7847;n bi&#7871;t &#273;&#7885;c file n&agrave;o. RAG &#273;&aacute;ng c&acirc;n nh&#7855;c khi gotchas scale l&ecirc;n 100+ categories ho&#7863;c c&#7847;n semantic search ("code n&agrave;y c&oacute; th&#7875; g&acirc;y memory leak" &rarr; match gotcha v&#7873; pooling d&ugrave; kh&ocirc;ng c&oacute; keyword tr&ugrave;ng).</div>
+Agent edit HomePanel.cs (kh&ocirc;ng match)
+  &rarr; (kh&ocirc;ng inject g&igrave;)</code></pre>
+<p>Th&ecirc;m gotcha m&#7899;i = th&ecirc;m 1 entry JSON. Hook code kh&ocirc;ng &#273;&#7893;i. Taxonomy ph&acirc;n c&#7845;p <code>scope/area/specific</code> (<code>core/</code>, <code>unity/</code>, <code>pkg/</code>) gi&uacute;p ph&acirc;n lo&#7841;i r&otilde; r&agrave;ng. Khi gotcha &#273;&#432;&#7907;c promote t&#7921; &#273;&#7897;ng (&#8805;2 sessions c&ugrave;ng category), n&oacute; c&#361;ng t&#7921; &#273;&#7897;ng &#273;&#432;&#7907;c append v&agrave;o index.</p>
+
+<div class="callout info"><div class="callout-title">T&#7841;i sao kh&ocirc;ng full RAG v&#7899;i vector DB?</div>
+Corpus nh&#7887; (12-50 entries), keyword match &#273;&#7911; ch&iacute;nh x&aacute;c, hook c&#7847;n ch&#7841;y trong 3 gi&acirc;y. &#272;&#7885;c JSON + grep nhanh h&#417;n embedding query. Full RAG &#273;&aacute;ng c&acirc;n nh&#7855;c khi 500+ entries ho&#7863;c c&#7847;n semantic search.</div>
 
 <blockquote>Agent kh&ocirc;ng c&oacute; tr&iacute; nh&#7899;, nh&#432;ng m&ocirc;i tr&#432;&#7901;ng c&oacute; th&#7875;. Thay v&igrave; mong agent nh&#7899; &mdash; <strong>x&acirc;y h&#7879; th&#7889;ng &#273;&#7875; m&ocirc;i tr&#432;&#7901;ng nh&#7855;c</strong>.</blockquote>
 
